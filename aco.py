@@ -1,4 +1,4 @@
-# https://github.com/johnberroa/Ant-Colony-Optimization/blob/master/AntColonyOptimizer.py
+# https://github.com/khanhnamle1994/trip-optimizer
 import random
 import numpy as np
 
@@ -58,7 +58,8 @@ class ACO(object):
                 curr_cost = []
                 for i in range(graph.rank - 1):
                     ant._select_next()
-                ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
+                # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
+                ant.total_cost = max(ant.total_cost, graph.matrix[ant.tabu[-1]][ant.tabu[0]])
                 curr_cost.append(ant.total_cost)
                 if ant.total_cost < best_cost:
                     best_cost = ant.total_cost
@@ -86,6 +87,7 @@ class _Ant(object):
         self.eta = [[0 if i == j else 1 / graph.matrix[i][j] for j in range(graph.rank)] for i in
                     range(graph.rank)]  # heuristic information
         start = random.randint(0, graph.rank - 1)  # start from any node
+        print(start)
         self.tabu.append(start)
         self.current = start
         self.allowed.remove(start)
@@ -115,7 +117,8 @@ class _Ant(object):
                 break
         self.allowed.remove(selected)
         self.tabu.append(selected)
-        self.total_cost += self.graph.matrix[self.current][selected]
+        # self.total_cost += self.graph.matrix[self.current][selected]
+        self.total_cost = max(self.total_cost, self.graph.matrix[self.current][selected])
         self.current = selected
 
     # noinspection PyUnusedLocal
