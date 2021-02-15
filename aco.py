@@ -1,7 +1,7 @@
-# https://github.com/khanhnamle1994/trip-optimizer
 import random
 import numpy as np
 
+#python 3.7+ required
 
 class Graph(object):
     def __init__(self, cost_matrix):
@@ -51,6 +51,8 @@ class ACO(object):
         best_solution = []
         avg_costs = []
         best_costs = []
+        plot_data = {"gen":[],"ACO- average cost":[],"ACO- best cost":[]}
+        # plot_data = {}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
@@ -58,8 +60,7 @@ class ACO(object):
                 curr_cost = []
                 for i in range(graph.rank - 1):
                     ant._select_next()
-                # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
-                ant.total_cost = max(ant.total_cost, graph.matrix[ant.tabu[-1]][ant.tabu[0]])
+                ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
                 curr_cost.append(ant.total_cost)
                 if ant.total_cost < best_cost:
                     best_cost = ant.total_cost
@@ -72,7 +73,10 @@ class ACO(object):
             if verbose:
                 print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
                     gen+1, best_cost, avg_costs[-1], best_solution))
-        return best_solution, best_cost, avg_costs, best_costs
+            plot_data["gen"].append(gen+1)
+            plot_data["ACO- average cost"].append(avg_costs[-1])
+            plot_data["ACO- best cost"].append(best_cost)
+        return best_solution, best_cost, avg_costs, best_costs, plot_data
 
 
 class _Ant(object):
@@ -87,7 +91,7 @@ class _Ant(object):
         self.eta = [[0 if i == j else 1 / graph.matrix[i][j] for j in range(graph.rank)] for i in
                     range(graph.rank)]  # heuristic information
         start = random.randint(0, graph.rank - 1)  # start from any node
-        print(start)
+        # print(start)
         self.tabu.append(start)
         self.current = start
         self.allowed.remove(start)
@@ -117,8 +121,7 @@ class _Ant(object):
                 break
         self.allowed.remove(selected)
         self.tabu.append(selected)
-        # self.total_cost += self.graph.matrix[self.current][selected]
-        self.total_cost = max(self.total_cost, self.graph.matrix[self.current][selected])
+        self.total_cost += self.graph.matrix[self.current][selected]
         self.current = selected
 
     # noinspection PyUnusedLocal

@@ -1,10 +1,13 @@
 
 import random
-
 import numpy
+
+import aco
+import aco_max
 import aco_combined
 import aco_optional
-from aco import ACO, Graph
+from aco_max import ACO_Max, Graph
+
 
 
 # matrix =[[0, 51, 14, 48],
@@ -19,6 +22,7 @@ from aco import ACO, Graph
 # best_solution, best_cost, avg_costs, best_costs = alg.solve(g, True)
 
 # print(best_cost)
+from plot import Plot
 
 matrix1 = [[0, 51, 14, 48, 1], #best path: 0->2->3->1->0 = 100
           [28, 0, 19, 49, 100],
@@ -51,17 +55,40 @@ matrices=[matrix1, matrix2, matrix3, matrix4]
 
 optionals = [[2,3], [4, 7, 8], [1, 15, 22, 23], [5, 10, 15, 20, 25, 35, 45]]
 for matrix, optional in zip(matrices, optionals):
-    g = Graph(matrix)
-    alg = ACO(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution, best_cost, avg_costs, best_costs = alg.solve(g, True)
+
+    g = aco_max.Graph(matrix)
+    alg = aco.ACO(10, 10, 1, 1, 0.5, 1, 0)
+    best_solution, best_cost, avg_costs, best_costs, plot_data = alg.solve(g, True)
+
+    new_plot=Plot("Regular ACO")
+    new_plot.plot_points(plot_data, ['r', 'g', 'b'])
+    new_plot.display()
+
+    g0 = aco_max.Graph(matrix)
+    alg0 = aco_max.ACO_Max(10, 10, 1, 1, 0.5, 1, 0)
+    best_solution0, best_cost0, avg_costs0, best_costs0, plot_data0= alg0.solve(g0, True)
+
+    new_plot=Plot("Max ACO")
+    new_plot.plot_points(plot_data0, ['r', 'g', 'b'])
+    new_plot.display()
 
     g1 = aco_optional.Graph(matrix, optional)
     alg1 = aco_optional.ACO_Optional(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution, best_cost, avg_costs, best_costs = alg1.solve(g1, True)
+    best_solution1, best_cost1, avg_costs1, best_costs1, plot_data1 = alg1.solve(g1, True)
+
+    new_plot=Plot("Optional ACO")
+    new_plot.plot_points(plot_data1, ['r', 'g', 'b'])
+    new_plot.display()
 
     g2 = aco_combined.Graph(matrix, optional)
     alg2 = aco_combined.ACO_Combined(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution, best_cost, avg_costs, best_costs = alg.solve(g, True)
+    best_solution2, best_cost2, avg_costs2, best_costs2, plot_data2 = alg2.solve(g2, True)
+
+    new_plot=Plot("Combined ACO")
+    new_plot.plot_points(plot_data2, ['r', 'g', 'b'])
+    new_plot.display()
+
+
 
 # matrix=[]
 # for i in range(50):

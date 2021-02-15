@@ -1,4 +1,3 @@
-# https://github.com/khanhnamle1994/trip-optimizer
 import random
 import numpy as np
 
@@ -54,6 +53,7 @@ class ACO_Optional(object):
         best_solution = []
         avg_costs = []
         best_costs = []
+        plot_data = {"gen":[],"ACO Optional- average cost":[],"ACO Optional- best cost":[]}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
@@ -74,7 +74,10 @@ class ACO_Optional(object):
             if verbose:
                 print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
                     gen+1, best_cost, avg_costs[-1], best_solution))
-        return best_solution, best_cost, avg_costs, best_costs
+            plot_data["gen"].append(gen+1)
+            plot_data["ACO Optional- average cost"].append(avg_costs[-1])
+            plot_data["ACO Optional- best cost"].append(best_cost)
+        return best_solution, best_cost, avg_costs, best_costs, plot_data
 
 
 class _Ant(object):

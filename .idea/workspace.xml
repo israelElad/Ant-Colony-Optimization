@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5fc50ab-2fa1-40d0-bab1-b847b7fcab59" name="Default Changelist" comment="">
+    <list default="true" id="c5fc50ab-2fa1-40d0-bab1-b847b7fcab59" name="Default Changelist" comment="init">
+      <change afterPath="$PROJECT_DIR$/aco_max.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Ant_Colony_Optimization.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Ant_Colony_Optimization.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco_combined.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco_combined.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco_optional.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco_optional.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -23,7 +37,13 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.tools" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Elad\PycharmProjects\Ant_Colony_Optimization" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
@@ -57,11 +77,42 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1608828162497</updated>
-      <workItem from="1608828175184" duration="1235000" />
+      <workItem from="1608828175184" duration="1994000" />
+      <workItem from="1610556218495" duration="2429000" />
+      <workItem from="1610637941168" duration="7108000" />
+      <workItem from="1610870832518" duration="26043000" />
+      <workItem from="1611064596904" duration="838000" />
+      <workItem from="1613382413957" duration="1818000" />
     </task>
+    <task id="LOCAL‎00001" summary="init">
+      <created>1608830402458</created>
+      <option name="number" value="LOCAL‎00001" />
+      <option name="presentableId" value="LOCAL‎00001" />
+      <updated>1608830402458</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Ant_Colony_Optimization$main.coverage" NAME="main Coverage Results" MODIFIED="1613383330630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
