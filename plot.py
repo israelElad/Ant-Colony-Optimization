@@ -3,8 +3,13 @@ import matplotlib.pyplot as plt
 from cycler import cycler
 
 class Plot:
-    def __init__(self, title):
+    xvalues=None
+    def __init__(self, title, colors_list, x_dict, y_label):
         plt.title(title)
+        plt.rc('axes', prop_cycle=(cycler('color', colors_list)))
+        x_label,self.xvalues=next(iter(x_dict.items()))
+        plt.xlabel(x_label)
+        plt.ylabel(y_label)
 
     def display(self):
         # show a legend on the plot
@@ -12,19 +17,15 @@ class Plot:
         # Display a figure.
         plt.show()
 
-    def plot_line(self, plot_data_dicts, color):
-        x=6
+    def plot_line(self, y_label, y_values):
+        plt.plot(self.xvalues, y_values, label=y_label)
+        plt.ylabel(self.y_labels)
 
-    def plot_points(self, plot_data_dicts, colors_list):
-        plt.rc('axes', prop_cycle=(cycler('color', colors_list)))
-
+    def plot_lines(self, plot_data_dicts):
         dicts_iter=iter(plot_data_dicts.items())
-        xlabel,xvalues=next(dicts_iter)
-        y1label,y1values=next(dicts_iter)
-        y2label,y2values=next(dicts_iter)
-        plt.xlabel(xlabel)
-        plt.ylabel(y1label+ " and " + y2label)
 
-
-        plt.plot(xvalues, y1values, label=y1label)
-        plt.plot(xvalues, y2values, label=y2label)
+        y_label, y_values=next(dicts_iter,(None,None))
+        self.y_labels = y_label
+        while y_label:
+            self.plot_line(y_label, y_values)
+            y_label, y_values = next(dicts_iter, (None,None))

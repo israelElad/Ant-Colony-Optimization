@@ -53,12 +53,13 @@ class ACO_Combined(object):
         best_solution = []
         avg_costs = []
         best_costs = []
-        plot_data = {"gen":[],"ACO Combined- average cost":[],"ACO Combined- best cost":[]}
+        plot_x={"gen":[]}
+        plot_y = {"ACO Combined- average cost":[],"ACO Combined- best cost":[]}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
+            curr_cost = []
             for ant in ants:
-                curr_cost = []
                 while ant._has_unvisited_mandatory_nodes():
                     ant._select_next()
                # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]] # todo
@@ -75,10 +76,10 @@ class ACO_Combined(object):
             if verbose:
                 print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
                     gen+1, best_cost, avg_costs[-1], best_solution))
-            plot_data["gen"].append(gen+1)
-            plot_data["ACO Combined- average cost"].append(avg_costs[-1])
-            plot_data["ACO Combined- best cost"].append(best_cost)
-        return best_solution, best_cost, avg_costs, best_costs, plot_data
+            plot_x["gen"].append(gen+1)
+            plot_y["ACO Combined- average cost"].append(avg_costs[-1])
+            plot_y["ACO Combined- best cost"].append(best_cost)
+        return best_solution, best_cost, avg_costs, best_costs, plot_x, plot_y
 
 
 class _Ant(object):
