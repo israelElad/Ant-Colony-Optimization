@@ -1,114 +1,107 @@
 import random
+from typing import Dict, List
 import numpy as np
+from Graph import Graph
+# python 3.7+ required
 
-#python 3.7+ required
 
-class Graph(object):
-    def __init__(self, cost_matrix):
+def cummulative_total_cost(ant, new_node):
+    new_total_cost = ant.total_cost + \
+        ant.graph.matrix[ant.current_node][new_node]
+    return new_total_cost
+
+
+class AntColonyOptimizer():
+    def __init__(
+            self, num_of_ants: int, epochs: int, total_cost_func, alpha: float,
+            beta: float, evaporation_rate: float, q: int):
         """
-        :param cost_matrix:
-        :param rank: rank of the cost matrix
-        """
-        self.matrix = cost_matrix
-        self.rank = len(cost_matrix)
-        self.pheromone = [[1 / (self.rank * self.rank)
-                           for j in range(self.rank)] for i in range(self.rank)]
-
-
-class ACO(object):
-    def __init__(self, ant_count: int, generations: int, alpha: float, beta: float, rho: float, q: int,
-                 strategy: int):
-        """
-        :param ant_count:
-        :param generations:
+        :param num_of_ants:
+        :param epochs:
         :param alpha: relative importance of pheromone
         :param beta: relative importance of heuristic information
-        :param rho: pheromone residual coefficient
+        :param evaporation_rate: pheromone residual coefficient
         :param q: pheromone intensity
-        :param strategy: pheromone update strategy. 0 - ant-cycle, 1 - ant-quality, 2 - ant-density
         """
-        self.Q = q
-        self.rho = rho
-        self.beta = beta
+        self.num_of_ants = num_of_ants
+        self.epochs = epochs
+        self.total_cost_func = total_cost_func
         self.alpha = alpha
-        self.ant_count = ant_count
-        self.generations = generations
-        self.update_strategy = strategy
+        self.beta = beta
+        self.evaporation_rate = evaporation_rate
+        self.Q = q
 
-    def _update_pheromone(self, graph: Graph, ants: list):
-        for i, row in enumerate(graph.pheromone):
-            for j, col in enumerate(row):
-                graph.pheromone[i][j] *= self.rho
-                for ant in ants:
-                    graph.pheromone[i][j] += ant.pheromone_delta[i][j]
-
-    # noinspection PyProtectedMember
     def solve(self, graph: Graph, verbose: bool = False):
         """
         :param graph:
         """
         best_cost = float('inf')
-        best_solution = []
-        avg_costs = []
         best_costs = []
-        plot_data = {"gen":[],"ACO- average cost":[],"ACO- best cost":[]}
-        # plot_data = {}
-        for gen in range(self.generations):
-            # noinspection PyUnusedLocal
-            ants = [_Ant(self, graph) for i in range(self.ant_count)]
+        best_path = []
+
+        plot_x = {"epoch": []}
+        plot_y = {"ACO- best cost": []}
+        for epoch in range(self.epochs):
+            ants = [_Ant(self, graph) for _ in range(self.num_of_ants)]
             for ant in ants:
-                curr_cost = []
-                for i in range(graph.rank - 1):
-                    ant._select_next()
-                ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
-                curr_cost.append(ant.total_cost)
+                for _ in range(graph.num_of_nodes - 1):
+                    next_node = ant.choose_next_node()
+                    ant.move_to_node(next_node)
+                ant.return_to_start()
                 if ant.total_cost < best_cost:
                     best_cost = ant.total_cost
-                    best_solution = [] + ant.tabu
+                    best_path = [] + ant.tabu
                 # update pheromone
-                ant._update_pheromone_delta()
+                ant.update_pheromone_delta()
             self._update_pheromone(graph, ants)
             best_costs.append(best_cost)
-            avg_costs.append(np.mean(curr_cost))
             if verbose:
-                print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
-                    gen+1, best_cost, avg_costs[-1], best_solution))
-            plot_data["gen"].append(gen+1)
-            plot_data["ACO- average cost"].append(avg_costs[-1])
-            plot_data["ACO- best cost"].append(best_cost)
-        return best_solution, best_cost, avg_costs, best_costs, plot_data
+                print('Generation #{} best cost: {}, path: {}'.format(
+                    epoch+1, best_cost, best_path))
+            plot_x["epoch"].append(epoch+1)
+            plot_y["ACO- best cost"].append(best_cost)
+        return best_path, best_cost, best_costs, plot_x, plot_y
+
+    def _update_pheromone(self, graph: Graph, ants: list):
+        for i, row in enumerate(graph.pheromone):
+            for j, col in enumerate(row):
+                graph.pheromone[i][j] *= self.evaporation_rate
+                for ant in ants:
+                    graph.pheromone[i][j] += ant.pheromone_delta_matrix[i][j]
 
 
-class _Ant(object):
-    def __init__(self, aco, graph):
-        self.colony = aco
+class _Ant():
+    def __init__(self, algorithm, graph):
+        self.algorithm = algorithm
         self.graph = graph
         self.total_cost = 0.0
         self.tabu = []  # tabu list
-        self.pheromone_delta = []  # the local increase of pheromone
+        self.pheromone_delta_matrix = []  # the local increase of pheromone
         # nodes which are allowed for the next selection
-        self.allowed = [i for i in range(graph.rank)]
-        self.eta = [[0 if i == j else 1 / graph.matrix[i][j] for j in range(graph.rank)] for i in
-                    range(graph.rank)]  # heuristic information
-        start = random.randint(0, graph.rank - 1)  # start from any node
+        self.allowed = [i for i in range(graph.num_of_nodes)]
+        self.eta = [[0 if i == j else 1 / graph.matrix[i][j]
+                     for j in range(graph.num_of_nodes)]
+                    for i in range(graph.num_of_nodes)]  # heuristic information
+        start = random.randint(0,
+                               graph.num_of_nodes - 1)  # start from any node
         # print(start)
         self.tabu.append(start)
-        self.current = start
+        self.current_node = start
         self.allowed.remove(start)
 
-    def _select_next(self):
+    def choose_next_node(self):
         denominator = 0
         for i in self.allowed:
-            denominator += self.graph.pheromone[self.current][i] ** self.colony.alpha * self.eta[self.current][
-                i] ** self.colony.beta
-        # noinspection PyUnusedLocal
+            denominator += self.graph.pheromone[self.current_node][i] ** self.algorithm.alpha * self.eta[self.current_node][
+                i] ** self.algorithm.beta
         # probabilities for moving to a node in the next step
-        probabilities = [0 for i in range(self.graph.rank)]
-        for i in range(self.graph.rank):
+        probabilities = [0 for i in range(self.graph.num_of_nodes)]
+        for i in range(self.graph.num_of_nodes):
             try:
                 self.allowed.index(i)  # test if allowed list contains i
-                probabilities[i] = self.graph.pheromone[self.current][i] ** self.colony.alpha * \
-                    self.eta[self.current][i] ** self.colony.beta / denominator
+                probabilities[i] = self.graph.pheromone[self.current_node][i] ** self.algorithm.alpha * \
+                    self.eta[self.current_node][i] ** self.algorithm.beta / \
+                    denominator
             except ValueError:
                 pass  # do nothing
         # select next node by probability roulette
@@ -119,23 +112,22 @@ class _Ant(object):
             if rand <= 0:
                 selected = i
                 break
-        self.allowed.remove(selected)
-        self.tabu.append(selected)
-        self.total_cost += self.graph.matrix[self.current][selected]
-        self.current = selected
+        return selected
 
-    # noinspection PyUnusedLocal
-    def _update_pheromone_delta(self):
-        self.pheromone_delta = [
-            [0 for j in range(self.graph.rank)] for i in range(self.graph.rank)]
-        for _ in range(1, len(self.tabu)):
-            i = self.tabu[_ - 1]
-            j = self.tabu[_]
-            if self.colony.update_strategy == 1:  # ant-quality system
-                self.pheromone_delta[i][j] = self.colony.Q
-            elif self.colony.update_strategy == 2:  # ant-density system
-                # noinspection PyTypeChecker
-                self.pheromone_delta[i][j] = self.colony.Q / \
-                    self.graph.matrix[i][j]
-            else:  # ant-cycle system
-                self.pheromone_delta[i][j] = self.colony.Q / self.total_cost
+    def move_to_node(self, node):
+        self.allowed.remove(node)
+        self.tabu.append(node)
+        self.total_cost = self.algorithm.total_cost_func(self, node)
+        self.current_node = node
+
+    def return_to_start(self):
+        start_node = self.tabu[0]
+        self.total_cost = self.algorithm.total_cost_func(self, start_node)
+
+    def update_pheromone_delta(self):
+        self.pheromone_delta_matrix = np.zeros(
+            (self.graph.num_of_nodes, self.graph.num_of_nodes))
+        for i in range(len(self.tabu)-1):
+            visited_node = self.tabu[i]
+            next_visited_node = self.tabu[i+1]
+            self.pheromone_delta_matrix[visited_node][next_visited_node] = self.algorithm.Q / self.total_cost
