@@ -56,8 +56,8 @@ class ACO_Max(object):
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
+            curr_cost = []
             for ant in ants:
-                curr_cost = []
                 for i in range(graph.rank - 1):
                     ant._select_next()
                 # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
@@ -74,10 +74,10 @@ class ACO_Max(object):
             if verbose:
                 print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
                     gen+1, best_cost, avg_costs[-1], best_solution))
-            plot_data["gen"].append(gen+1)
-            plot_data["ACO Max- average cost"].append(avg_costs[-1])
-            plot_data["ACO Max- best cost"].append(best_cost)
-        return best_solution, best_cost, avg_costs, best_costs, plot_data
+            plot_x["gen"].append(gen+1)
+            plot_y["ACO Max- average cost"].append(avg_costs[-1])
+            plot_y["ACO Max- best cost"].append(best_cost)
+        return best_solution, best_cost, avg_costs, best_costs, plot_x, plot_y
 
 
 class _Ant(object):
