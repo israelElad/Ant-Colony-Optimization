@@ -13,8 +13,8 @@ def cummulative_total_cost(ant, new_node):
 
 class AntColonyOptimizer():
     def __init__(
-            self, num_of_ants: int, epochs: int, total_cost_func, alpha: float,
-            beta: float, evaporation_rate: float, q: int):
+            self, num_of_ants: int, epochs: int, alpha: float,
+            beta: float, evaporation_rate: float, Q: int, total_cost_func):
         """
         :param num_of_ants:
         :param epochs:
@@ -25,42 +25,44 @@ class AntColonyOptimizer():
         """
         self.num_of_ants = num_of_ants
         self.epochs = epochs
-        self.total_cost_func = total_cost_func
         self.alpha = alpha
         self.beta = beta
         self.evaporation_rate = evaporation_rate
-        self.Q = q
+        self.Q = Q
+        self.total_cost_func = total_cost_func
+
 
     def solve(self, graph: Graph, verbose: bool = False):
         """
         :param graph:
         """
-        best_cost = float('inf')
-        best_costs = []
-        best_path = []
+        best_global_cost = float('inf')
+        best_global_path = []
+        best_costs_per_epochs = []
+        avg_costs_per_epochs = []
 
-        plot_x = {"epoch": []}
         plot_y = {"ACO- best cost": []}
         for epoch in range(self.epochs):
             ants = [_Ant(self, graph) for _ in range(self.num_of_ants)]
+            curr_cost = []
             for ant in ants:
                 for _ in range(graph.num_of_nodes - 1):
                     next_node = ant.choose_next_node()
                     ant.move_to_node(next_node)
                 ant.return_to_start()
-                if ant.total_cost < best_cost:
-                    best_cost = ant.total_cost
-                    best_path = [] + ant.tabu
-                # update pheromone
+                curr_cost.append(ant.total_cost)
+                if ant.total_cost < best_global_cost:
+                    best_global_cost = ant.total_cost
+                    best_global_path = [] + ant.tabu
                 ant.update_pheromone_delta()
             self._update_pheromone(graph, ants)
-            best_costs.append(best_cost)
+            best_costs_per_epochs.append(best_global_cost)
+            avg_costs_per_epochs.append(np.mean(curr_cost))
             if verbose:
                 print('Generation #{} best cost: {}, path: {}'.format(
-                    epoch+1, best_cost, best_path))
-            plot_x["epoch"].append(epoch+1)
-            plot_y["ACO- best cost"].append(best_cost)
-        return best_path, best_cost, best_costs, plot_x, plot_y
+                    epoch+1, best_global_cost, best_global_path))
+            plot_y["ACO- best cost"].append(best_global_cost)
+        return best_global_cost, best_costs_per_epochs, avg_costs_per_epochs
 
     def _update_pheromone(self, graph: Graph, ants: list):
         for i, row in enumerate(graph.pheromone):

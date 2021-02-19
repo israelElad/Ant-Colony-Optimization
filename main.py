@@ -25,7 +25,15 @@ from plot import Plot
 
 from matrices import matrices, num_optional_nodes
 import numpy as np
-from aco import * 
+from aco import *
+
+num_of_ants = 10
+epochs = 10
+total_cost_func = cummulative_total_cost
+alpha = 1
+beta = 1
+evaporation_rate = 0.5
+Q = 1
 
 for matrix, optional in zip(matrices, num_optional_nodes):
     optiona_matrix_rank = len(matrix) - optional
@@ -33,11 +41,15 @@ for matrix, optional in zip(matrices, num_optional_nodes):
     optional_matrix = m[0:optiona_matrix_rank, 0:optiona_matrix_rank]
     g = aco.Graph(matrix)
     alg = AntColonyOptimizer(
-        num_of_ants=10, epochs=10, total_cost_func=cummulative_total_cost,
-        alpha=1, beta=1, evaporation_rate=0.5, q=1)
-    best_solution, best_cost, best_costs, plot_x, plot_y = alg.solve(
-        g, True)
-
+        num_of_ants, epochs,
+        alpha, beta, evaporation_rate, Q,
+        total_cost_func=cummulative_total_cost)
+    best_global_cost, best_costs_per_epochs, avg_costs_per_epochs = alg.solve(
+        graph=g, verbose=True)
+    plot_x = {"epoch": range(1, epochs+1)}
+    plot_y = {}
+    plot_y["best cost"] = best_costs_per_epochs
+    plot_y["average cost"] = avg_costs_per_epochs
     new_plot = Plot("Regular ACO", ['r', 'g', 'b'], plot_x, "cost")
     new_plot.plot_lines(plot_y)
     new_plot.display()
