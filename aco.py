@@ -13,8 +13,8 @@ def cummulative_total_cost(ant, new_node):
 
 class AntColonyOptimizer():
     def __init__(
-            self, num_of_ants: int, epochs: int, alpha: float,
-            beta: float, evaporation_rate: float, Q: int, total_cost_func):
+            self, num_of_ants: int, epochs: int, alpha: float, beta: float, 
+            evaporation_rate: float, Q: int, total_cost_func):
         """
         :param num_of_ants:
         :param epochs:
@@ -30,7 +30,6 @@ class AntColonyOptimizer():
         self.evaporation_rate = evaporation_rate
         self.Q = Q
         self.total_cost_func = total_cost_func
-
 
     def solve(self, graph: Graph, verbose: bool = False):
         """
@@ -80,10 +79,10 @@ class _Ant():
         self.tabu = []  # tabu list
         self.pheromone_delta_matrix = []  # the local increase of pheromone
         # nodes which are allowed for the next selection
-        self.allowed = [i for i in range(graph.num_of_nodes)]
+        self.allowed = range(graph.num_of_nodes)
         self.eta = [[0 if i == j else 1 / graph.matrix[i][j]
-                     for j in range(graph.num_of_nodes)]
-                    for i in range(graph.num_of_nodes)]  # heuristic information
+                     for i in range(graph.num_of_nodes)]
+                    for j in range(graph.num_of_nodes)]  # heuristic information
         start = random.randint(0,
                                graph.num_of_nodes - 1)  # start from any node
         # print(start)
@@ -97,7 +96,7 @@ class _Ant():
             denominator += self.graph.pheromone[self.current_node][i] ** self.algorithm.alpha * self.eta[self.current_node][
                 i] ** self.algorithm.beta
         # probabilities for moving to a node in the next step
-        probabilities = [0 for i in range(self.graph.num_of_nodes)]
+        probabilities = [0 for _ in range(self.graph.num_of_nodes)]
         for i in range(self.graph.num_of_nodes):
             try:
                 self.allowed.index(i)  # test if allowed list contains i
