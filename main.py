@@ -35,6 +35,10 @@ beta = 1
 evaporation_rate = 0.5
 Q = 1
 
+
+def generate_classical_ants(algo, graph, num_of_ants):
+    return [Ant(algo, graph) for _ in range(num_of_ants)]
+
 for matrix, optional in zip(matrices, num_optional_nodes):
     optiona_matrix_rank = len(matrix) - optional
     m = np.array(matrix)
@@ -45,7 +49,7 @@ for matrix, optional in zip(matrices, num_optional_nodes):
         alpha, beta, evaporation_rate, Q,
         total_cost_func=cummulative_total_cost)
     best_global_cost, best_costs_per_epochs, avg_costs_per_epochs = alg.solve(
-        graph=g, verbose=True)
+        graph=g, generate_ants=generate_classical_ants, verbose=True)
     plot_x = {"epoch": range(1, epochs+1)}
     plot_y = {}
     plot_y["best cost"] = best_costs_per_epochs

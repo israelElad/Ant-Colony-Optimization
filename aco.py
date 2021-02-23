@@ -13,7 +13,7 @@ def cummulative_total_cost(ant, new_node):
 
 class AntColonyOptimizer():
     def __init__(
-            self, num_of_ants: int, epochs: int, alpha: float, beta: float, 
+            self, num_of_ants: int, epochs: int, alpha: float, beta: float,
             evaporation_rate: float, Q: int, total_cost_func):
         """
         :param num_of_ants:
@@ -31,7 +31,7 @@ class AntColonyOptimizer():
         self.Q = Q
         self.total_cost_func = total_cost_func
 
-    def solve(self, graph: Graph, verbose: bool = False):
+    def solve(self, graph: Graph, generate_ants, verbose: bool = False):
         """
         :param graph:
         """
@@ -42,18 +42,22 @@ class AntColonyOptimizer():
 
         plot_y = {"ACO- best cost": []}
         for epoch in range(self.epochs):
-            ants = [_Ant(self, graph) for _ in range(self.num_of_ants)]
+            ants = generate_ants(self, graph, self.num_of_ants)
             curr_cost = []
             for ant in ants:
-                for _ in range(graph.num_of_nodes - 1):
-                    next_node = ant.choose_next_node()
-                    ant.move_to_node(next_node)
-                ant.return_to_start()
-                curr_cost.append(ant.total_cost)
+                start = ant.generate_start_node()
+                ant.make_first_move(start)
+                while not ant.has_finished_cycle(): #todo
+                    next_node = ant.choose_next_node()  # todo
+                    updated_cost = self.total_cost_func(ant, next_node)
+                    ant.update_path_total_cost(updated_cost)
+                    ant.move_to_node(next_node)  # todo
+                self.total_cost_func(ant, start)
+                curr_cost.append(ant.total_cost)  # todo
                 if ant.total_cost < best_global_cost:
                     best_global_cost = ant.total_cost
-                    best_global_path = [] + ant.tabu
-                ant.update_pheromone_delta()
+                    best_global_path = ant.path()  # todo
+                ant.update_pheromone_delta()  # todo
             self._update_pheromone(graph, ants)
             best_costs_per_epochs.append(best_global_cost)
             avg_costs_per_epochs.append(np.mean(curr_cost))
@@ -71,7 +75,7 @@ class AntColonyOptimizer():
                     graph.pheromone[i][j] += ant.pheromone_delta_matrix[i][j]
 
 
-class _Ant():
+class Ant():
     def __init__(self, algorithm, graph):
         self.algorithm = algorithm
         self.graph = graph
@@ -79,16 +83,24 @@ class _Ant():
         self.tabu = []  # tabu list
         self.pheromone_delta_matrix = []  # the local increase of pheromone
         # nodes which are allowed for the next selection
-        self.allowed = range(graph.num_of_nodes)
+        self.allowed = list(range(graph.num_of_nodes))
         self.eta = [[0 if i == j else 1 / graph.matrix[i][j]
                      for i in range(graph.num_of_nodes)]
                     for j in range(graph.num_of_nodes)]  # heuristic information
-        start = random.randint(0,
-                               graph.num_of_nodes - 1)  # start from any node
-        # print(start)
-        self.tabu.append(start)
+
+    def generate_start_node(self):
+        return random.randint(0,
+                              self.graph.num_of_nodes - 1)
+
+    def make_first_move(self, start):
         self.current_node = start
-        self.allowed.remove(start)
+        self.move_to_node(start)
+
+    def path(self):
+        return self.tabu
+
+    def has_finished_cycle(self):
+        return len(self.allowed) == 0
 
     def choose_next_node(self):
         denominator = 0
@@ -104,7 +116,7 @@ class _Ant():
                     self.eta[self.current_node][i] ** self.algorithm.beta / \
                     denominator
             except ValueError:
-                pass  # do nothing
+                pass
         # select next node by probability roulette
         selected = 0
         rand = random.random()
@@ -115,15 +127,14 @@ class _Ant():
                 break
         return selected
 
+    def update_path_total_cost(self, cost):
+        self.total_cost = cost
+
     def move_to_node(self, node):
         self.allowed.remove(node)
         self.tabu.append(node)
-        self.total_cost = self.algorithm.total_cost_func(self, node)
         self.current_node = node
 
-    def return_to_start(self):
-        start_node = self.tabu[0]
-        self.total_cost = self.algorithm.total_cost_func(self, start_node)
 
     def update_pheromone_delta(self):
         self.pheromone_delta_matrix = np.zeros(
@@ -132,3 +143,24 @@ class _Ant():
             visited_node = self.tabu[i]
             next_visited_node = self.tabu[i+1]
             self.pheromone_delta_matrix[visited_node][next_visited_node] = self.algorithm.Q / self.total_cost
+
+
+class Ant_Optional():
+    def __init__(self, algorithm, graph, mandatory_nodes):
+        self.internal_ant = Ant(algorithm, graph)
+        self.mandatory_nodes = mandatory_nodes
+        self.visited_all_mandatory = False
+        self.completed_cycle = False
+
+
+    def update_pheromone(self, graph: Graph, ants: list):
+        self.internal_ant.update_pheromone(graph, ants)
+
+    def generate_start_node(self):
+        return random.choice(self.mandatory_nodes)
+
+
+    def make_first_move(self):
+        start = self.generate_start_node
+        self.internal_ant.current_node = start
+        self.move_to_node(start)
