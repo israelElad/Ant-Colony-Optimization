@@ -11,6 +11,12 @@ def cummulative_total_cost(ant, new_node):
     return new_total_cost
 
 
+def max_total_cost(ant, new_node):
+    new_total_cost = max(ant.get_total_cost(),
+                         ant.graph.matrix[ant.get_current_node()][new_node])
+    return new_total_cost
+
+
 class AntColonyOptimizer():
     def __init__(
             self, num_of_ants: int, epochs: int, alpha: float, beta: float,
@@ -47,16 +53,21 @@ class AntColonyOptimizer():
             for ant in ants:
                 start = ant.generate_start_node()
                 ant.make_first_move(start)
+                path_cost_sum = 0
                 while not ant.has_completed_cycle():
                     next_node = ant.choose_next_node()
                     updated_cost = self.total_cost_func(ant, next_node)
+                    path_cost_sum += graph.matrix[ant.get_current_node()
+                                                  ][next_node]
                     ant.update_path_total_cost(updated_cost)
                     ant.move_to_node(next_node)
                 updated_cost = self.total_cost_func(ant, start)
                 ant.update_path_total_cost(updated_cost)
-                curr_cost.append(ant.get_total_cost())
-                if ant.get_total_cost() < best_global_cost:
-                    best_global_cost = ant.get_total_cost()
+                path_cost_sum += graph.matrix[ant.get_current_node()
+                                              ][start]
+                curr_cost.append(path_cost_sum)
+                if path_cost_sum < best_global_cost:
+                    best_global_cost = path_cost_sum
                     best_global_path = ant.path()
                 ant.update_pheromone_delta()
             self._update_pheromone(graph, ants)
@@ -65,7 +76,6 @@ class AntColonyOptimizer():
             if verbose:
                 print('Generation #{} best cost: {}, path: {}'.format(
                     epoch+1, best_global_cost, best_global_path))
-            plot_y["ACO- best cost"].append(best_global_cost)
         return best_global_cost, best_costs_per_epochs, avg_costs_per_epochs
 
     def _update_pheromone(self, graph: Graph, ants: list):
@@ -153,6 +163,7 @@ class Ant():
 
     def get_pheromone_delta_matrix(self):
         return self.pheromone_delta_matrix
+
 
 class Ant_Optional():
     def __init__(self, algorithm, graph, optional_nodes):
