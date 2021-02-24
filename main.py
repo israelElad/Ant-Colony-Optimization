@@ -6,7 +6,6 @@ import aco
 import aco_max
 import aco_combined
 import aco_optional
-from aco_max import ACO_Max, Graph
 
 
 # matrix =[[0, 51, 14, 48],
@@ -23,12 +22,13 @@ from aco_max import ACO_Max, Graph
 # print(best_cost)
 from plot import Plot
 
-from matrices import matrices, num_optional_nodes
+from matrices import matrices, all_num_optional_nodes
 import numpy as np
 from aco import *
+from Graph import Graph
 
-num_of_ants = 10
-epochs = 10
+num_of_ants = 100
+epochs = 100
 total_cost_func = cummulative_total_cost
 alpha = 1
 beta = 1
@@ -36,54 +36,83 @@ evaporation_rate = 0.5
 Q = 1
 
 
-def generate_classical_ants(algo, graph, num_of_ants):
-    return [Ant(algo, graph) for _ in range(num_of_ants)]
+def create_classical_ants_generator(num_of_ants):
+    
+    def f(algo, graph):    
+        return [Ant(algo, graph) for _ in range(num_of_ants)]
+    return f
 
-for matrix, optional in zip(matrices, num_optional_nodes):
-    optiona_matrix_rank = len(matrix) - optional
+def create_optional_ants_generator(num_of_ants, optional_nodes):
+    def f(algo, graph):
+        return [Ant_Optional(algo, graph, optional_nodes) for _ in range(num_of_ants)]
+    return f
+
+for matrix, num_optional_nodes in zip(matrices, all_num_optional_nodes):
+    whole_matrix_rank = len(matrix)
+    classical_matrix_rank = whole_matrix_rank - num_optional_nodes
     m = np.array(matrix)
-    optional_matrix = m[0:optiona_matrix_rank, 0:optiona_matrix_rank]
-    g = aco.Graph(matrix)
+    classical_matrix = m[0:classical_matrix_rank, 0:classical_matrix_rank]
+    graph_for_classical = Graph(classical_matrix)
+    graph_for_optional = Graph(matrix)
+    optional_nodes = list(
+        range(classical_matrix_rank, whole_matrix_rank)) #TODO
+    
+    # alg = AntColonyOptimizer(
+    #     num_of_ants, epochs,
+    #     alpha, beta, evaporation_rate, Q,
+    #     total_cost_func=cummulative_total_cost)
+    # best_global_cost, best_costs_per_epochs, avg_costs_per_epochs = alg.solve(
+    #     graph=graph_for_classical, generate_ants=create_classical_ants_generator(num_of_ants), verbose=True)
+
+    # plot_x = {"epoch": range(1, epochs+1)}
+    # plot_y = {}
+    # plot_y["best cost"] = best_costs_per_epochs
+    # plot_y["average cost"] = avg_costs_per_epochs
+    # new_plot = Plot("classical ACO", ['r', 'g', 'b'], plot_x, "cost")
+    # new_plot.plot_lines(plot_y)
+    # new_plot.display()
+
     alg = AntColonyOptimizer(
         num_of_ants, epochs,
         alpha, beta, evaporation_rate, Q,
         total_cost_func=cummulative_total_cost)
     best_global_cost, best_costs_per_epochs, avg_costs_per_epochs = alg.solve(
-        graph=g, generate_ants=generate_classical_ants, verbose=True)
+        graph=graph_for_optional, generate_ants=create_optional_ants_generator(num_of_ants, optional_nodes), verbose=True)
+
     plot_x = {"epoch": range(1, epochs+1)}
     plot_y = {}
     plot_y["best cost"] = best_costs_per_epochs
     plot_y["average cost"] = avg_costs_per_epochs
-    new_plot = Plot("Regular ACO", ['r', 'g', 'b'], plot_x, "cost")
+    new_plot = Plot("classical ACO", ['r', 'g', 'b'], plot_x, "cost")
     new_plot.plot_lines(plot_y)
     new_plot.display()
 
-    g0 = aco_max.Graph(matrix)
-    alg0 = aco_max.ACO_Max(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution0, best_cost0, avg_costs0, best_costs0, plot_data0 = alg0.solve(
-        g0, True)
+    # g0 = aco_max.Graph(matrix)
+    # alg0 = aco_max.ACO_Max(10, 10, 1, 1, 0.5, 1, 0)
+    # best_solution0, best_cost0, avg_costs0, best_costs0, plot_data0 = alg0.solve(
+    #     g0, True)
 
-    new_plot = Plot("Max ACO")
-    new_plot.plot_points(plot_data0, ['r', 'g', 'b'])
-    new_plot.display()
+    # new_plot = Plot("Max ACO")
+    # new_plot.plot_points(plot_data0, ['r', 'g', 'b'])
+    # new_plot.display()
 
-    g1 = aco_optional.Graph(matrix, optional)
-    alg1 = aco_optional.ACO_Optional(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution1, best_cost1, avg_costs1, best_costs1, plot_data1 = alg1.solve(
-        g1, True)
+    # g1 = aco_optional.Graph(matrix, optional)
+    # alg1 = aco_optional.ACO_Optional(10, 10, 1, 1, 0.5, 1, 0)
+    # best_solution1, best_cost1, avg_costs1, best_costs1, plot_data1 = alg1.solve(
+    #     g1, True)
 
-    new_plot = Plot("Optional ACO")
-    new_plot.plot_points(plot_data1, ['r', 'g', 'b'])
-    new_plot.display()
+    # new_plot = Plot("Optional ACO")
+    # new_plot.plot_points(plot_data1, ['r', 'g', 'b'])
+    # new_plot.display()
 
-    g2 = aco_combined.Graph(matrix, optional)
-    alg2 = aco_combined.ACO_Combined(10, 10, 1, 1, 0.5, 1, 0)
-    best_solution2, best_cost2, avg_costs2, best_costs2, plot_data2 = alg2.solve(
-        g2, True)
+    # g2 = aco_combined.Graph(matrix, optional)
+    # alg2 = aco_combined.ACO_Combined(10, 10, 1, 1, 0.5, 1, 0)
+    # best_solution2, best_cost2, avg_costs2, best_costs2, plot_data2 = alg2.solve(
+    #     g2, True)
 
-    new_plot = Plot("Combined ACO")
-    new_plot.plot_points(plot_data2, ['r', 'g', 'b'])
-    new_plot.display()
+    # new_plot = Plot("Combined ACO")
+    # new_plot.plot_points(plot_data2, ['r', 'g', 'b'])
+    # new_plot.display()
 
 
 # matrix=[]

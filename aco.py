@@ -42,22 +42,23 @@ class AntColonyOptimizer():
 
         plot_y = {"ACO- best cost": []}
         for epoch in range(self.epochs):
-            ants = generate_ants(self, graph, self.num_of_ants)
+            ants = generate_ants(self, graph)
             curr_cost = []
             for ant in ants:
                 start = ant.generate_start_node()
                 ant.make_first_move(start)
-                while not ant.has_finished_cycle(): #todo
-                    next_node = ant.choose_next_node()  # todo
+                while not ant.has_completed_cycle():
+                    next_node = ant.choose_next_node()  
                     updated_cost = self.total_cost_func(ant, next_node)
                     ant.update_path_total_cost(updated_cost)
-                    ant.move_to_node(next_node)  # todo
-                self.total_cost_func(ant, start)
-                curr_cost.append(ant.total_cost)  # todo
+                    ant.move_to_node(next_node)
+                updated_cost = self.total_cost_func(ant, start)
+                ant.update_path_total_cost(updated_cost)
+                curr_cost.append(ant.total_cost)
                 if ant.total_cost < best_global_cost:
                     best_global_cost = ant.total_cost
-                    best_global_path = ant.path()  # todo
-                ant.update_pheromone_delta()  # todo
+                    best_global_path = ant.path()  
+                ant.update_pheromone_delta() 
             self._update_pheromone(graph, ants)
             best_costs_per_epochs.append(best_global_cost)
             avg_costs_per_epochs.append(np.mean(curr_cost))
@@ -99,7 +100,7 @@ class Ant():
     def path(self):
         return self.tabu
 
-    def has_finished_cycle(self):
+    def has_completed_cycle(self):
         return len(self.allowed) == 0
 
     def choose_next_node(self):
@@ -135,7 +136,6 @@ class Ant():
         self.tabu.append(node)
         self.current_node = node
 
-
     def update_pheromone_delta(self):
         self.pheromone_delta_matrix = np.zeros(
             (self.graph.num_of_nodes, self.graph.num_of_nodes))
@@ -146,12 +146,15 @@ class Ant():
 
 
 class Ant_Optional():
-    def __init__(self, algorithm, graph, mandatory_nodes):
+    def __init__(self, algorithm, graph, optional_nodes):
         self.internal_ant = Ant(algorithm, graph)
-        self.mandatory_nodes = mandatory_nodes
+        self.graph = graph
+        self.optional_nodes = optional_nodes
+        self.mandatory_nodes = list(
+            set(range(graph.num_of_nodes)) - set(optional_nodes))
+
         self.visited_all_mandatory = False
         self.completed_cycle = False
-
 
     def update_pheromone(self, graph: Graph, ants: list):
         self.internal_ant.update_pheromone(graph, ants)
@@ -159,8 +162,29 @@ class Ant_Optional():
     def generate_start_node(self):
         return random.choice(self.mandatory_nodes)
 
-
-    def make_first_move(self):
-        start = self.generate_start_node
+    def make_first_move(self, start):
         self.internal_ant.current_node = start
-        self.move_to_node(start)
+        self.internal_ant.move_to_node(start)
+        self.ctr_visited_mandatory = 1
+
+    def has_completed_cycle(self):
+        return self.completed_cycle
+
+    def choose_next_node(self):
+        if not self.visited_all_mandatory and (self.ctr_visited_mandatory == len(self.mandatory_nodes)):
+            self.visited_all_mandatory = True
+            start_node = self.internal_ant.tabu.pop(0)
+            self.internal_ant.allowed.append(start_node)  # TODO encapsulation!
+        return self.internal_ant.choose_next_node()
+
+    def move_to_node(self):
+        self.internal_ant.move_to_node()
+
+    def total_cost(self):
+        return self.internal_ant.total_cost()
+
+    def path(self):
+        return [self.internal_ant.tabu[-1]]+self.internal_ant.tabu[:-1]
+
+    def update_pheromone_delta(self):
+        self.internal_ant.update_pheromone_delta()
