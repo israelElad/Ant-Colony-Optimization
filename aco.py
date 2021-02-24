@@ -6,8 +6,8 @@ from Graph import Graph
 
 
 def cummulative_total_cost(ant, new_node):
-    new_total_cost = ant.total_cost + \
-        ant.graph.matrix[ant.current_node][new_node]
+    new_total_cost = ant.get_total_cost() + \
+        ant.graph.matrix[ant.get_current_node()][new_node]
     return new_total_cost
 
 
@@ -48,17 +48,17 @@ class AntColonyOptimizer():
                 start = ant.generate_start_node()
                 ant.make_first_move(start)
                 while not ant.has_completed_cycle():
-                    next_node = ant.choose_next_node()  
+                    next_node = ant.choose_next_node()
                     updated_cost = self.total_cost_func(ant, next_node)
                     ant.update_path_total_cost(updated_cost)
                     ant.move_to_node(next_node)
                 updated_cost = self.total_cost_func(ant, start)
                 ant.update_path_total_cost(updated_cost)
-                curr_cost.append(ant.total_cost)
-                if ant.total_cost < best_global_cost:
-                    best_global_cost = ant.total_cost
-                    best_global_path = ant.path()  
-                ant.update_pheromone_delta() 
+                curr_cost.append(ant.get_total_cost())
+                if ant.get_total_cost() < best_global_cost:
+                    best_global_cost = ant.get_total_cost()
+                    best_global_path = ant.path()
+                ant.update_pheromone_delta()
             self._update_pheromone(graph, ants)
             best_costs_per_epochs.append(best_global_cost)
             avg_costs_per_epochs.append(np.mean(curr_cost))
@@ -73,7 +73,7 @@ class AntColonyOptimizer():
             for j, col in enumerate(row):
                 graph.pheromone[i][j] *= self.evaporation_rate
                 for ant in ants:
-                    graph.pheromone[i][j] += ant.pheromone_delta_matrix[i][j]
+                    graph.pheromone[i][j] += ant.get_pheromone_delta_matrix()[i][j]
 
 
 class Ant():
@@ -92,6 +92,12 @@ class Ant():
     def generate_start_node(self):
         return random.randint(0,
                               self.graph.num_of_nodes - 1)
+
+    def get_total_cost(self):
+        return self.total_cost
+
+    def get_current_node(self):
+        return self.current_node
 
     def make_first_move(self, start):
         self.current_node = start
@@ -132,7 +138,8 @@ class Ant():
         self.total_cost = cost
 
     def move_to_node(self, node):
-        self.allowed.remove(node)
+        if node in self.allowed:
+            self.allowed.remove(node)
         self.tabu.append(node)
         self.current_node = node
 
@@ -144,6 +151,8 @@ class Ant():
             next_visited_node = self.tabu[i+1]
             self.pheromone_delta_matrix[visited_node][next_visited_node] = self.algorithm.Q / self.total_cost
 
+    def get_pheromone_delta_matrix(self):
+        return self.pheromone_delta_matrix
 
 class Ant_Optional():
     def __init__(self, algorithm, graph, optional_nodes):
@@ -156,6 +165,12 @@ class Ant_Optional():
         self.visited_all_mandatory = False
         self.completed_cycle = False
 
+    def get_current_node(self):
+        return self.internal_ant.get_current_node()
+
+    def update_path_total_cost(self, cost):
+        self.internal_ant.update_path_total_cost(cost)
+
     def update_pheromone(self, graph: Graph, ants: list):
         self.internal_ant.update_pheromone(graph, ants)
 
@@ -163,6 +178,7 @@ class Ant_Optional():
         return random.choice(self.mandatory_nodes)
 
     def make_first_move(self, start):
+        self.start = start
         self.internal_ant.current_node = start
         self.internal_ant.move_to_node(start)
         self.ctr_visited_mandatory = 1
@@ -177,14 +193,21 @@ class Ant_Optional():
             self.internal_ant.allowed.append(start_node)  # TODO encapsulation!
         return self.internal_ant.choose_next_node()
 
-    def move_to_node(self):
-        self.internal_ant.move_to_node()
+    def move_to_node(self, node):
+        self.internal_ant.move_to_node(node)
+        if node not in self.optional_nodes:
+            self.ctr_visited_mandatory += 1
+        if self.visited_all_mandatory and node == self.start:
+            self.completed_cycle = True
 
-    def total_cost(self):
-        return self.internal_ant.total_cost()
+    def get_total_cost(self):
+        return self.internal_ant.get_total_cost()
 
     def path(self):
         return [self.internal_ant.tabu[-1]]+self.internal_ant.tabu[:-1]
 
     def update_pheromone_delta(self):
         self.internal_ant.update_pheromone_delta()
+
+    def get_pheromone_delta_matrix(self):
+        return self.internal_ant.get_pheromone_delta_matrix()
