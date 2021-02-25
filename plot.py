@@ -1,13 +1,14 @@
-
 import matplotlib.pyplot as plt
 from cycler import cycler
 
+
 class Plot:
-    xvalues=None
+    xvalues = None
+
     def __init__(self, title, colors_list, x_dict, y_label):
         plt.title(title)
         plt.rc('axes', prop_cycle=(cycler('color', colors_list)))
-        x_label,self.xvalues=next(iter(x_dict.items()))
+        x_label, self.xvalues = next(iter(x_dict.items()))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
 
@@ -22,10 +23,10 @@ class Plot:
         plt.ylabel(self.y_labels)
 
     def plot_lines(self, plot_data_dicts):
-        dicts_iter=iter(plot_data_dicts.items())
+        dicts_iter = iter(plot_data_dicts.items())
 
-        y_label, y_values=next(dicts_iter,(None,None))
+        y_label, y_values = next(dicts_iter, (None, None))
         self.y_labels = y_label
         while y_label:
             self.plot_line(y_label, y_values)
-            y_label, y_values = next(dicts_iter, (None,None))
+            y_label, y_values = next(dicts_iter, (None, None))
