@@ -1,5 +1,4 @@
 import random
-from typing import Dict, List
 import numpy as np
 
 
@@ -13,7 +12,7 @@ class Graph(object):
         self.optional_nodes = optional_nodes
         self.rank = len(cost_matrix)
         self.mandatory_nodes = list(
-            set([i for i in range(self.rank-optional_nodes)]))
+            set([i for i in range(self.rank)]) - set(optional_nodes))
         self.pheromone = [[1 / (self.rank * self.rank)
                            for j in range(self.rank)] for i in range(self.rank)]
 
@@ -54,8 +53,8 @@ class ACO_Optional(object):
         best_solution = []
         avg_costs = []
         best_costs = []
-        plot_data = {"gen": [], "ACO Optional- average cost": [],
-                     "ACO Optional- best cost": []}  # type: Dict[str, List[float]]
+        plot_x={"gen":[]}
+        plot_y = {"ACO Optional- average cost":[],"ACO Optional- best cost":[]}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
@@ -148,6 +147,7 @@ class _Ant(object):
         if self.visited_all_mandatory and self.start == selected:
             self.completed_cycle = True
 
+    # noinspection PyUnusedLocal
     def _update_pheromone_delta(self):
         self.pheromone_delta = [
             [0 for j in range(self.graph.rank)] for i in range(self.graph.rank)]

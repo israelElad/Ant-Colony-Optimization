@@ -1,5 +1,4 @@
 import random
-from typing import Dict, List
 import numpy as np
 
 
@@ -51,8 +50,8 @@ class ACO_Max(object):
         best_solution = []
         avg_costs = []
         best_costs = []
-        plot_data = {"gen": [], "ACO Max- average cost": [],
-                     "ACO Max- best cost": []}  # type: Dict[str, List[float]]
+        plot_x={"gen":[]}
+        plot_y = {"ACO Max- average cost":[],"ACO Max- best cost":[]}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
