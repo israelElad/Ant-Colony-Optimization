@@ -94,4 +94,4 @@ matrix4 = [[0, 65, 44, 74, 91, 59, 90, 33, 8, 60, 68, 87, 17, 70, 94, 87, 47, 41
 
 
 matrices = [matrix1, matrix2, matrix3, matrix4]
-all_num_optional_nodes = [1, 3, 5, 10]
+all_num_optional_nodes = [1, 5, 10, 15]

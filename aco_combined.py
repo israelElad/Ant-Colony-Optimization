@@ -54,7 +54,8 @@ class ACO_Combined(object):
         avg_costs = []
         best_costs = []
         plot_x={"gen":[]}
-        plot_y = {"ACO Combined- average cost":[],"ACO Combined- best cost":[]}
+        # plot_y = {"ACO Combined- average cost":[],"ACO Combined- best cost":[]}
+        plot_y = {"ACO Combined- best cost":[]}
         for gen in range(self.generations):
             # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
@@ -77,7 +78,7 @@ class ACO_Combined(object):
                 print('Generation #{} best cost: {}, avg cost: {}, path: {}'.format(
                     gen+1, best_cost, avg_costs[-1], best_solution))
             plot_x["gen"].append(gen+1)
-            plot_y["ACO Combined- average cost"].append(avg_costs[-1])
+            # plot_y["ACO Combined- average cost"].append(avg_costs[-1])
             plot_y["ACO Combined- best cost"].append(best_cost)
         return best_solution, best_cost, avg_costs, best_costs, plot_x, plot_y
 

@@ -6,7 +6,7 @@ class Plot:
     xvalues=None
     def __init__(self, title, colors_list, x_dict, y_label):
         plt.title(title)
-        plt.rc('axes', prop_cycle=(cycler('color', colors_list)))
+        plt.gca().set_prop_cycle('color', colors_list)
         x_label,self.xvalues=next(iter(x_dict.items()))
         plt.xlabel(x_label)
         plt.ylabel(y_label)
