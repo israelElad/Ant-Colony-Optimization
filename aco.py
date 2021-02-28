@@ -1,13 +1,14 @@
 import random
-from typing import Dict, List
 import numpy as np
 from Graph import Graph
+
+
 # python 3.7+ required
 
 
 def cummulative_total_cost(ant, new_node):
     new_total_cost = ant.get_total_cost() + \
-        ant.graph.matrix[ant.get_current_node()][new_node]
+                     ant.graph.matrix[ant.get_current_node()][new_node]
     return new_total_cost
 
 
@@ -46,7 +47,6 @@ class AntColonyOptimizer():
         best_costs_per_epochs = []
         avg_costs_per_epochs = []
 
-        plot_y = {"ACO- best cost": []}
         for epoch in range(self.epochs):
             ants = generate_ants(self, graph)
             curr_cost = []
@@ -58,13 +58,13 @@ class AntColonyOptimizer():
                     next_node = ant.choose_next_node()
                     updated_cost = self.total_cost_func(ant, next_node)
                     path_cost_sum += graph.matrix[ant.get_current_node()
-                                                  ][next_node]
+                    ][next_node]
                     ant.update_path_total_cost(updated_cost)
                     ant.move_to_node(next_node)
                 updated_cost = self.total_cost_func(ant, start)
                 ant.update_path_total_cost(updated_cost)
                 path_cost_sum += graph.matrix[ant.get_current_node()
-                                              ][start]
+                ][start]
                 curr_cost.append(path_cost_sum)
                 if path_cost_sum < best_global_cost:
                     best_global_cost = path_cost_sum
@@ -75,7 +75,7 @@ class AntColonyOptimizer():
             avg_costs_per_epochs.append(np.mean(curr_cost))
             if verbose:
                 print('Generation #{} best cost: {}, path: {}'.format(
-                    epoch+1, best_global_cost, best_global_path))
+                    epoch + 1, best_global_cost, best_global_path))
         return best_global_cost, best_costs_per_epochs, avg_costs_per_epochs
 
     def _update_pheromone(self, graph: Graph, ants: list):
@@ -130,8 +130,8 @@ class Ant():
             try:
                 self.allowed.index(i)  # test if allowed list contains i
                 probabilities[i] = self.graph.pheromone[self.current_node][i] ** self.algorithm.alpha * \
-                    self.eta[self.current_node][i] ** self.algorithm.beta / \
-                    denominator
+                                   self.eta[self.current_node][i] ** self.algorithm.beta / \
+                                   denominator
             except ValueError:
                 pass
         # select next node by probability roulette
@@ -156,9 +156,9 @@ class Ant():
     def update_pheromone_delta(self):
         self.pheromone_delta_matrix = np.zeros(
             (self.graph.num_of_nodes, self.graph.num_of_nodes))
-        for i in range(len(self.tabu)-1):
+        for i in range(len(self.tabu) - 1):
             visited_node = self.tabu[i]
-            next_visited_node = self.tabu[i+1]
+            next_visited_node = self.tabu[i + 1]
             self.pheromone_delta_matrix[visited_node][next_visited_node] = self.algorithm.Q / self.total_cost
 
     def get_pheromone_delta_matrix(self):
@@ -201,7 +201,7 @@ class Ant_Optional():
         if not self.visited_all_mandatory and (self.ctr_visited_mandatory == len(self.mandatory_nodes)):
             self.visited_all_mandatory = True
             start_node = self.internal_ant.tabu.pop(0)
-            self.internal_ant.allowed.append(start_node)  # TODO encapsulation!
+            self.internal_ant.allowed.append(start_node)
         return self.internal_ant.choose_next_node()
 
     def move_to_node(self, node):
@@ -215,7 +215,7 @@ class Ant_Optional():
         return self.internal_ant.get_total_cost()
 
     def path(self):
-        return [self.internal_ant.tabu[-1]]+self.internal_ant.tabu[:-1]
+        return [self.internal_ant.tabu[-1]] + self.internal_ant.tabu[:-1]
 
     def update_pheromone_delta(self):
         self.internal_ant.update_pheromone_delta()

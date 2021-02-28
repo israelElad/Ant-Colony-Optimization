@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c5fc50ab-2fa1-40d0-bab1-b847b7fcab59" name="Default Changelist" comment="graphs added">
+    <list default="true" id="c5fc50ab-2fa1-40d0-bab1-b847b7fcab59" name="Default Changelist" comment="reverted back final graphs and submitted">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Factory.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/aco.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aco_combined.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco_combined.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aco_max.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco_max.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aco_optional.py" beforeDir="false" afterPath="$PROJECT_DIR$/aco_optional.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco_combined.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco_max.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/aco_optional.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot.py" afterDir="false" />
     </list>
+    <list id="b2de8f6d-4e5a-40ad-90ba-3da815d54060" name="Revert &quot;working, all 4 graphs shown&quot;" comment="Revert &quot;working, all 4 graphs shown&quot;&#10;&#10;This reverts commit 634eca45" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,6 +26,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectId" id="1m6y6tzmUOs4uobrO37TrpLLz1F" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -123,7 +126,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>60</line>
+          <line>40</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -133,13 +136,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/plot.py</url>
-          <line>9</line>
+          <line>8</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Ant_Colony_Optimization$main.coverage" NAME="main Coverage Results" MODIFIED="1613506463655" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Ant_Colony_Optimization$main.coverage" NAME="main Coverage Results" MODIFIED="1614535193598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
