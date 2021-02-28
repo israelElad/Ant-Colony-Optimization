@@ -42,7 +42,6 @@ class ACO(object):
                 for ant in ants:
                     graph.pheromone[i][j] += ant.pheromone_delta[i][j]
 
-    # noinspection PyProtectedMember
     def solve(self, graph: Graph, verbose: bool = False):
         """
         :param graph:
@@ -55,7 +54,6 @@ class ACO(object):
         # plot_y = {"ACO- average cost":[],"ACO- best cost":[]}
         plot_y = {"ACO- best cost":[]}
         for gen in range(self.generations):
-            # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
             curr_cost = []
             for ant in ants:
@@ -92,7 +90,6 @@ class _Ant(object):
         self.eta = [[0 if i == j else 1 / graph.matrix[i][j] for j in range(graph.rank)] for i in
                     range(graph.rank)]  # heuristic information
         start = random.randint(0, graph.rank - 1)  # start from any node
-        # print(start)
         self.tabu.append(start)
         self.current = start
         self.allowed.remove(start)
@@ -102,7 +99,6 @@ class _Ant(object):
         for i in self.allowed:
             denominator += self.graph.pheromone[self.current][i] ** self.colony.alpha * self.eta[self.current][
                 i] ** self.colony.beta
-        # noinspection PyUnusedLocal
         # probabilities for moving to a node in the next step
         probabilities = [0 for i in range(self.graph.rank)]
         for i in range(self.graph.rank):
@@ -125,7 +121,6 @@ class _Ant(object):
         self.total_cost += self.graph.matrix[self.current][selected]
         self.current = selected
 
-    # noinspection PyUnusedLocal
     def _update_pheromone_delta(self):
         self.pheromone_delta = [
             [0 for j in range(self.graph.rank)] for i in range(self.graph.rank)]
@@ -135,7 +130,6 @@ class _Ant(object):
             if self.colony.update_strategy == 1:  # ant-quality system
                 self.pheromone_delta[i][j] = self.colony.Q
             elif self.colony.update_strategy == 2:  # ant-density system
-                # noinspection PyTypeChecker
                 self.pheromone_delta[i][j] = self.colony.Q / \
                     self.graph.matrix[i][j]
             else:  # ant-cycle system

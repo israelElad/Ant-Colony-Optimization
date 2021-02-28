@@ -44,7 +44,6 @@ class ACO_Combined(object):
                 for ant in ants:
                     graph.pheromone[i][j] += ant.pheromone_delta[i][j]
 
-    # noinspection PyProtectedMember
     def solve(self, graph: Graph, verbose: bool = False):
         """
         :param graph:
@@ -57,13 +56,12 @@ class ACO_Combined(object):
         # plot_y = {"ACO Combined- average cost":[],"ACO Combined- best cost":[]}
         plot_y = {"ACO Combined- best cost":[]}
         for gen in range(self.generations):
-            # noinspection PyUnusedLocal
             ants = [_Ant(self, graph) for i in range(self.ant_count)]
             curr_cost = []
             for ant in ants:
                 while ant._has_unvisited_mandatory_nodes():
                     ant._select_next()
-               # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]] # todo
+               # ant.total_cost += graph.matrix[ant.tabu[-1]][ant.tabu[0]]
                 ant.total_cost = max(ant.total_cost, graph.matrix[ant.tabu[-1]][ant.tabu[0]])
                 curr_cost.append(ant.total_cost)
                 if ant.total_cost < best_cost:
@@ -101,25 +99,21 @@ class _Ant(object):
         start = graph.mandatory_nodes[index]
         self.start = start
         self.ctr_visited_mandatory = 1        
-        # print(start)
         self.tabu.append(start)
         self.current = start
         self.allowed.remove(start)
 
     def _has_unvisited_mandatory_nodes(self):
-        # print("mandatory ctr ", self.ctr_visited_mandatory)
-        # print("other ", self.graph.rank-len(self.graph.optional_nodes))
         return not self.completed_cycle
 
     def _select_next(self):
-        if not self.visited_all_mandatory and (self.ctr_visited_mandatory == len(self.graph.mandatory_nodes)): #todo - was +1
+        if not self.visited_all_mandatory and (self.ctr_visited_mandatory == len(self.graph.mandatory_nodes)):
             self.allowed.append(self.tabu.pop(0))
             self.visited_all_mandatory = True
         denominator = 0
         for i in self.allowed:
             denominator += self.graph.pheromone[self.current][i] ** self.colony.alpha * self.eta[self.current][
                 i] ** self.colony.beta
-        # noinspection PyUnusedLocal
         # probabilities for moving to a node in the next step
         probabilities = [0 for i in range(self.graph.rank)]
         for i in range(self.graph.rank):
@@ -140,16 +134,12 @@ class _Ant(object):
         if selected not in self.graph.optional_nodes:
             self.ctr_visited_mandatory += 1
         self.tabu.append(selected)
-        # print("allowed: ", self.allowed)
-        # print("selected: ", selected)
-        # print("     \n")
         self.allowed.remove(selected)
         self.total_cost = max(self.total_cost, self.graph.matrix[self.current][selected])
         self.current = selected
         if self.visited_all_mandatory and self.start == selected:
             self.completed_cycle = True
 
-    # noinspection PyUnusedLocal
     def _update_pheromone_delta(self):
         self.pheromone_delta = [
             [0 for j in range(self.graph.rank)] for i in range(self.graph.rank)]
@@ -159,7 +149,6 @@ class _Ant(object):
             if self.colony.update_strategy == 1:  # ant-quality system
                 self.pheromone_delta[i][j] = self.colony.Q
             elif self.colony.update_strategy == 2:  # ant-density system
-                # noinspection PyTypeChecker
                 self.pheromone_delta[i][j] = self.colony.Q / \
                     self.graph.matrix[i][j]
             else:  # ant-cycle system
