@@ -1,6 +1,7 @@
 from plot import Plot
 from matrices import matrices, all_num_optional_nodes
 from aco import *
+from Graph import Graph
 
 num_of_ants = 10
 epochs = 20
